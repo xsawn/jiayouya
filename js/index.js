@@ -36,9 +36,9 @@ function generateChart () {
         type: 'category',
         // ['2022/09/01', '2022/09/01', '2022/09/01', '2022/09/01', '2022/09/01', '2022/09/01', 'Sun']
         data: examData.map(v => v[0]),
-        axisLine: item.indexOf('sort') !== -1 ? {
-          onZero:true   
-         } : undefined
+//         axisLine: item.indexOf('sort') !== -1 ? {
+//           onZero:true   
+//          } : undefined
      
       },
       axisLabel: {
@@ -50,7 +50,7 @@ function generateChart () {
         }
       },
       yAxis: {
-        inverse: item.indexOf('sort') !== -1 ? true: false,
+//         inverse: item.indexOf('sort') !== -1 ? true: false,
         type: 'value',
 
       },
