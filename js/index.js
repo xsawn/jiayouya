@@ -87,7 +87,7 @@ const customCfg = {
     cfg: {
       yAxis: {
         name: '分数',
-        min: 70
+        min: 50
       }
     }
   },
