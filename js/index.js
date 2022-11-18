@@ -4,32 +4,25 @@ const examData = [
   // 进入高三 暑期补课期间
   ['2022/09/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
   ,['2022/10/06',  484, 3, 107, 89, 58, 108, 55, 87, 87]
-  // 11 月份第3次月考（原始总分491，总分531；无年级排名，地理赋分76，生物赋分77
-  ,['2022/11/16',  491, 2, 133, 105, 96, 122, 55, 57, 56]
-  
-  ,['2022/12/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2023/01/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2022/02/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2022/03/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2022/04/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2022/05/01',  512, 3, 133, 96, 102, 94.5, 43, 87, 90]
-  ,['2022/05/20(目标)',  573, 1, 80, 106, 112, 115, 63, 87, 90]
-
+  // 11 月份第3次月考（原始总分491，总分531；无年级排名，地理赋分76，生物赋分77, [原始分， 赋分]
+  ,['2022/11/16',  [491, 531], 2, 133, 105, 96, 122, 55, [57, 76], [56, 77]]
 ]
-// 
+
+//
 const items = ['total-score', 'class-sort', 'all-class-sort', 'chinese', 'math', 'english', 'physical', 'biology', 'geography']
+let itemsTarget  = [573, 1, 80, 106, 112, 115, 63, 87, 90]
+
 const customCfg = {
   'total-score': {
-    title: '总分',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 420
+        name: '总分',
+        min: 420,
+        max: 750
       }
     }
   },
   'class-sort': {
-    title: '班级排名',
     cfg: {
       xAxis: {
         position: 'bottom',
@@ -46,13 +39,12 @@ const customCfg = {
       yAxis: {
         nameLocation: 'start',
         inverse: true,
-        name: '排名',
+        name: '班级排名',
         min: 1,
       }
     }
   },
   'all-class-sort': {
-    title: '年纪排名',
     cfg: {
       xAxis: {
         position: 'bottom',
@@ -69,61 +61,61 @@ const customCfg = {
       yAxis: {
         nameLocation: 'start',
         inverse: true,
-        name: '排名',
+        name: '年纪排名',
         min: 1,
       }
     }
   },
   'chinese': {
-    title: '语文',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 70
+        name: '语文',
+        min: 70,
+        max: 150
       }
     }
   },
   'math': {
-    title: '数学',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 50
+        name: '数学',
+        min: 50,
+        max: 150
       }
     }
   },
   'english': {
-    title: '英语',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 70
+        name: '英语',
+        min: 70,
+        max: 150,
       }
     }
   },
   'physical': {
-    title: '物理',
     cfg: {
       yAxis: {
-        name: '分数',
+        name: '物理',
+        max: 100
       }
     }
   },
   'biology': {
-    title: '生物',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 50
+        name: '生物',
+        min: 50,
+        max: 100
       }
     }
   },
   'geography': {
-    title: '地理',
     cfg: {
       yAxis: {
-        name: '分数',
-        min: 50
+        name: '地理',
+        min: 50,
+        max: 100
       }
     }
   }
@@ -143,14 +135,37 @@ function generateChart () {
     var option;
     let curCfg = customCfg[item].cfg
 
-    // 数据
-    const seriesData = examData.map(v => v[index + 1])
+
+
+    // 原始成绩
+    // const seriesData = examData.map(v => v[index + 1])
+    const seriesData = examData.map(v => {
+      let score =  v[index + 1]
+      if(Array.isArray(score)) {
+        return score[0]
+      }
+      return score
+    })
+
+    // 赋分成绩
+    const seriesData1 = examData.map(v => {
+      let score =  v[index + 1]
+      if(Array.isArray(score)) {
+        return score[1]
+      }
+      return ''
+    })
+
 
     option = {
-      title: {
-        left: 'center',
-        text: customCfg[item].title
-      },
+      // title: {
+      //   left: 'center',
+      //   text: customCfg[item].title,
+      //   textStyle: {
+      //     fontSize: 100,
+      //     fontWeight: 'bold',
+      //   },
+      // },
       xAxis: Object.assign({}, curCfg.xAxis || {}, {
         name: '时间', 
         type: 'category',
@@ -181,6 +196,10 @@ function generateChart () {
       yAxis: Object.assign({}, curCfg.yAxis || {}, {
         // name:
         // inverse: item.indexOf('sort') !== -1 ? true: undefined,
+        nameTextStyle: {
+          fontSize: 20,
+          fontWeight: 'bold',
+        },
         axisLine: { show: true },
         type: 'value',
         splitLine: {
@@ -193,33 +212,44 @@ function generateChart () {
         
 
       }),
+      legend: {
+        data: ['原始成绩', '赋分成绩'],
+        top: 30,
+      },
       series: [
         {
            // [150, 230, 224, 218, 135, 147, 260],
-          data: seriesData,
+          name: '原始成绩',
+          data:  seriesData,
           type: 'line',
           itemStyle : { normal: {label : {show: true}}},
-          markPoint: item.indexOf('sort') !== -1 ? {} : {
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: {
+              normal: {
+                color: 'red'
+              }
+            },
             data: [{
-              name: '目标',
-              value: seriesData[seriesData.length-1], // string 
-              show: true,
-              itemStyle: {
-                // color: '#ff0000'
-              },
-              label: {
-                // color: '#ffffff'
-              },
-              // symbol: 'roundRect',
-              coord: [xAxisData[xAxisData.length-1], seriesData[seriesData.length-1] + ''],
-              // symbolSize: 50,
-              // type: "max",
-              // valueIndex: 1 // 'yAxis'
-              // x: 40, // seriesData[seriesData.length-1], 
-              // y: 40, // xAxisData[xAxisData.length-1],
-            }]
-          }
-        }
+              yAxis: itemsTarget[index],
+            }],
+            label: {
+              position: 'start',
+              distance: [20, 20],
+              normal: {
+                formatter: '目标\n' + itemsTarget[index]
+              }
+            }
+          },
+        },
+        // 赋分成绩
+        {
+          name: '赋分成绩',
+          data: seriesData1,
+          type: 'line',
+          itemStyle : { normal: {label : {show: true}}},
+       }
       ]
     };
     console.log(item + ' option >>>', option)
